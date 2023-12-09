@@ -15,6 +15,7 @@ module.exports = {
       expiry = 7 * 24 * 60 * 60,
     } = providerOptions;
     const isUseSSL = useSSL === 'true' || useSSL === true;
+    console.log({ isUseSSL });
     const MINIO = new Minio.Client({
       endPoint,
       port: +port || 9000,
@@ -87,7 +88,6 @@ module.exports = {
       },
       getSignedUrl(file) {
         return new Promise((resolve, reject) => {
-          console.log({ file });
           const url = new URL(file.url);
           if (url.hostname !== endPoint) {
             resolve({ url: file.url });
