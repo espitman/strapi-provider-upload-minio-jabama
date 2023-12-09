@@ -15,7 +15,6 @@ module.exports = {
       expiry = 7 * 24 * 60 * 60,
     } = providerOptions;
     const isUseSSL = useSSL === 'true' || useSSL === true;
-    console.log({ isUseSSL });
     const MINIO = new Minio.Client({
       endPoint,
       port: +port || 9000,
@@ -65,6 +64,7 @@ module.exports = {
               const hostPart = getHostPart();
               const filePath = `${bucket}/${path}`;
               file.url = `${hostPart}${filePath}`;
+              console.log({ url: file.url });
               resolve();
             }
           );
