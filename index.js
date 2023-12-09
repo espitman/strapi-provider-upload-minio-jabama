@@ -1,11 +1,20 @@
 const Minio = require('minio');
-const mime = require("mime-types");
-
+const mime = require('mime-types');
 
 module.exports = {
   init(providerOptions) {
-    const { port, useSSL, endPoint, accessKey, secretKey, bucket, folder, private = false, expiry = 7 * 24 * 60 * 60 } = providerOptions;
-    const isUseSSL = (useSSL === 'true' || useSSL === true);
+    const {
+      port,
+      useSSL,
+      endPoint,
+      accessKey,
+      secretKey,
+      bucket,
+      folder,
+      private = false,
+      expiry = 7 * 24 * 60 * 60,
+    } = providerOptions;
+    const isUseSSL = useSSL === 'true' || useSSL === true;
     const MINIO = new Minio.Client({
       endPoint,
       port: +port || 9000,
@@ -21,7 +30,10 @@ module.exports = {
     };
     const getHostPart = () => {
       const protocol = isUseSSL ? 'https://' : 'http://';
-      const portSuffix = ((isUseSSL && +port === 443) || (isUseSSL && +port === 80)) ? '' : `:${port}`;
+      const portSuffix =
+        (isUseSSL && +port === 443) || (isUseSSL && +port === 80)
+          ? ''
+          : `:${port}`;
       return protocol + endPoint + portSuffix + '/';
     };
     const getFilePath = (file) => {
@@ -39,7 +51,7 @@ module.exports = {
           const path = getUploadPath(file);
           const metaData = {
             'Content-Type': mime.lookup(file.ext) || 'application/octet-stream',
-          }
+          };
           MINIO.putObject(
             bucket,
             path,
@@ -61,7 +73,7 @@ module.exports = {
         return new Promise((resolve, reject) => {
           const path = getFilePath(file);
 
-          MINIO.removeObject(bucket, path, err => {
+          MINIO.removeObject(bucket, path, (err) => {
             if (err) {
               return reject(err);
             }
@@ -71,10 +83,11 @@ module.exports = {
         });
       },
       isPrivate: () => {
-        return  (private === 'true' || private === true);
+        return private === 'true' || private === true;
       },
       getSignedUrl(file) {
         return new Promise((resolve, reject) => {
+          console.log({ file });
           const url = new URL(file.url);
           if (url.hostname !== endPoint) {
             resolve({ url: file.url });
@@ -82,12 +95,17 @@ module.exports = {
             resolve({ url: file.url });
           } else {
             const path = getFilePath(file);
-            MINIO.presignedGetObject(bucket, path, +expiry, (err, presignedUrl) => {
-              if (err) {
-                return reject(err);
+            MINIO.presignedGetObject(
+              bucket,
+              path,
+              +expiry,
+              (err, presignedUrl) => {
+                if (err) {
+                  return reject(err);
+                }
+                resolve({ url: presignedUrl });
               }
-              resolve({ url: presignedUrl });
-            });
+            );
           }
         });
       },
