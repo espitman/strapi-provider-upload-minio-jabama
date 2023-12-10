@@ -30,14 +30,16 @@ module.exports = {
       return `${path}${file.hash}${file.ext}`;
     };
     const getHostPart = () => {
-      // const protocol = isUseSSL ? 'https://' : 'http://';
-      // const portSuffix =
-      //   (isUseSSL && +port === 443) || (isUseSSL && +port === 80)
-      //     ? ''
-      //     : `:${port}`;
-      // console.log({ part: protocol + endPoint + portSuffix + '/' });
-      // return protocol + endPoint + portSuffix + '/';
-      return imageUrl;
+      if (imageUrl) {
+        return imageUrl;
+      }
+      const protocol = isUseSSL ? 'https://' : 'http://';
+      const portSuffix =
+        (isUseSSL && +port === 443) || (isUseSSL && +port === 80)
+          ? ''
+          : `:${port}`;
+      console.log({ part: protocol + endPoint + portSuffix + '/' });
+      return protocol + endPoint + portSuffix + '/';
     };
     const getFilePath = (file) => {
       const hostPart = getHostPart() + bucket + '/';
