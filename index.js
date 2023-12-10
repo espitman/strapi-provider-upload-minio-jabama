@@ -34,6 +34,7 @@ module.exports = {
         (isUseSSL && +port === 443) || (isUseSSL && +port === 80)
           ? ''
           : `:${port}`;
+      console.log({ part: protocol + endPoint + portSuffix + '/' });
       return protocol + endPoint + portSuffix + '/';
     };
     const getFilePath = (file) => {
